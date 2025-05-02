@@ -39,6 +39,7 @@ module "warp" {
   warp_name  = "Prod WARP Configuration"
   azure_ad_provider_id = module.idp.entra_idp_id
   security_teams_id = module.idp.security_teams_id
+  azure_group_ids = var.security_team_group_ids # Pass the same group IDs
   depends_on = [cloudflare_zero_trust_gateway_settings.zero_trust, module.idp]
 }
 
@@ -65,5 +66,7 @@ module "idp" {
   azure_client_id     = var.azure_client_id
   azure_client_secret = var.azure_client_secret
   azure_directory_id  = var.azure_directory_id
+  security_team_name  = var.security_team_name
+  security_team_group_ids = var.security_team_group_ids
   depends_on = [cloudflare_zero_trust_gateway_settings.zero_trust]
 }

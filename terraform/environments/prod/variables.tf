@@ -30,13 +30,21 @@ variable "intune_client_secret" {
   sensitive   = true
 }
 
-variable "azure_ad_provider_id" {
-  description = "ID of the Azure AD identity provider created in Cloudflare"
-  type        = string
-}
-
 variable "api_token" {
   description = "Cloudflare API Token with Zero Trust permissions"
   type        = string
   sensitive   = true
+}
+
+# New variables for security teams
+variable "security_team_name" {
+  description = "Name for the security team access group"
+  type        = string
+  default     = "Security Teams"
+}
+
+variable "security_team_group_ids" {
+  description = "List of Azure AD group IDs for security team members"
+  type        = list(string)
+  default     = []
 }

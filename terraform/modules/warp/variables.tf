@@ -18,3 +18,9 @@ variable "security_teams_id" {
   type        = string
   default     = ""
 }
+
+variable "azure_group_ids" {
+  description = "List of Azure AD Group IDs for security access"
+  type        = list(string)
+  default     = ["00000000-0000-0000-0000-000000000000"] # Default placeholder
+}

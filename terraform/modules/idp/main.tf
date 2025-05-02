@@ -21,14 +21,14 @@ resource "cloudflare_zero_trust_access_identity_provider" "microsoft_entra_id" {
   }
 }
 
-# Replace the current security_teams group with this
+# Updated to use variables
 resource "cloudflare_zero_trust_access_group" "security_teams" {
   account_id = var.account_id
-  name = "Security Teams"
+  name       = var.security_team_name
   
   include {
     azure {
-      id = ["e84da7bc-005d-41ad-8d04-a3afaa5aaff9", "e84da7bc-005d-41ad-8d04-a3afaa5aaff9"]
+      id = var.security_team_group_ids
       identity_provider_id = cloudflare_zero_trust_access_identity_provider.microsoft_entra_id.id
     }
   }
