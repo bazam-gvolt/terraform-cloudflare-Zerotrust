@@ -23,19 +23,21 @@ Before you begin:
 
 Add the following variables to your Terraform Cloud workspace:
 
-| Variable | Description | Sensitive? |
-|----------|-------------|-----------|
-| `account_id` | Cloudflare Account ID | No |
-| `api_token` | Cloudflare API Token | Yes |
-| `azure_client_id` | Azure AD Client ID | No |
-| `azure_client_secret` | Azure AD Client Secret | Yes |
-| `azure_directory_id` | Azure AD Tenant ID | No |
-| `intune_client_id` | Microsoft Intune Client ID | No |
-| `intune_client_secret` | Microsoft Intune Client Secret | Yes |
-| `red_team_name` | Name for the red team access group | No |
-| `red_team_group_ids` | List of Azure AD group IDs for red team | No |
-| `blue_team_name` | Name for the blue team access group | No |
-| `blue_team_group_ids` | List of Azure AD group IDs for blue team | No |
+| Variable | Description | Sensitive? | Format |
+|----------|-------------|-----------|--------|
+| `account_id` | Cloudflare Account ID | No | String |
+| `api_token` | Cloudflare API Token | Yes | String |
+| `azure_client_id` | Azure AD Client ID | No | String |
+| `azure_client_secret` | Azure AD Client Secret | Yes | String |
+| `azure_directory_id` | Azure AD Tenant ID | No | String |
+| `intune_client_id` | Microsoft Intune Client ID | No | String |
+| `intune_client_secret` | Microsoft Intune Client Secret | Yes | String |
+| `red_team_name` | Name for the red team access group | No | String |
+| `red_team_group_ids` | List of Azure AD group IDs for red team | No | HCL list: ["id-value-here"] |
+| `blue_team_name` | Name for the blue team access group | No | String |
+| `blue_team_group_ids` | List of Azure AD group IDs for blue team | No | HCL list: ["id-value-here"] |
+
+**Important**: When entering Azure AD group IDs, they must be formatted as HCL lists with square brackets, e.g., `["00000000-0000-0000-0000-000000000000"]` even if there's only one ID.
 
 ### 3. Run the Deployment
 
