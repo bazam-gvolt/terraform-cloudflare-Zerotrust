@@ -20,15 +20,28 @@ variable "azure_directory_id" {
   type        = string
 }
 
-# Add these new variables
-variable "security_team_name" {
-  description = "Name for the security team access group"
+# Red team variable
+variable "red_team_name" {
+  description = "Name for the red team access group"
   type        = string
-  default     = "Security Teams"
+  default     = "Red Team"
 }
 
-variable "security_team_group_ids" {
-  description = "List of Azure AD group IDs for security team members"
+variable "red_team_group_ids" {
+  description = "List of Azure AD group IDs for red team members"
   type        = list(string)
-  default     = ["00000000-0000-0000-0000-000000000000"] # Default placeholder
+  default     = []
+}
+
+# Blue team variable
+variable "blue_team_name" {
+  description = "Name for the blue team access group"
+  type        = string
+  default     = "Blue Team"
+}
+
+variable "blue_team_group_ids" {
+  description = "List of Azure AD group IDs for blue team members"
+  type        = list(string)
+  default     = []
 }

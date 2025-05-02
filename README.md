@@ -32,8 +32,10 @@ Add the following variables to your Terraform Cloud workspace:
 | `azure_directory_id` | Azure AD Tenant ID | No |
 | `intune_client_id` | Microsoft Intune Client ID | No |
 | `intune_client_secret` | Microsoft Intune Client Secret | Yes |
-| `security_team_name` | Name for security team | No |
-| `security_team_group_ids` | List of Azure AD group IDs (comma-separated) | No |
+| `red_team_name` | Name for the red team access group | No |
+| `red_team_group_ids` | List of Azure AD group IDs for red team | No |
+| `blue_team_name` | Name for the blue team access group | No |
+| `blue_team_group_ids` | List of Azure AD group IDs for blue team | No |
 
 ### 3. Run the Deployment
 

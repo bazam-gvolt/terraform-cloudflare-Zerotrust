@@ -21,14 +21,27 @@ resource "cloudflare_zero_trust_access_identity_provider" "microsoft_entra_id" {
   }
 }
 
-# Updated to use variables
-resource "cloudflare_zero_trust_access_group" "security_teams" {
+# Red Team Access Group
+resource "cloudflare_zero_trust_access_group" "red_team" {
   account_id = var.account_id
-  name       = var.security_team_name
+  name       = var.red_team_name
   
   include {
     azure {
-      id = var.security_team_group_ids
+      id = var.red_team_group_ids
+      identity_provider_id = cloudflare_zero_trust_access_identity_provider.microsoft_entra_id.id
+    }
+  }
+}
+
+# Blue Team Access Group
+resource "cloudflare_zero_trust_access_group" "blue_team" {
+  account_id = var.account_id
+  name       = var.blue_team_name
+  
+  include {
+    azure {
+      id = var.blue_team_group_ids
       identity_provider_id = cloudflare_zero_trust_access_identity_provider.microsoft_entra_id.id
     }
   }

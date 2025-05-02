@@ -31,8 +31,10 @@ module "idp" {
   azure_client_id     = var.azure_client_id
   azure_client_secret = var.azure_client_secret
   azure_directory_id  = var.azure_directory_id
-  security_team_name  = var.security_team_name
-  security_team_group_ids = var.security_team_group_ids
+  red_team_name       = var.red_team_name
+  red_team_group_ids  = var.red_team_group_ids
+  blue_team_name      = var.blue_team_name
+  blue_team_group_ids = var.blue_team_group_ids
   depends_on = [cloudflare_zero_trust_gateway_settings.zero_trust]
 }
 
@@ -48,11 +50,11 @@ module "device_posture" {
 module "warp" {
   source = "../../modules/warp"
   account_id = var.account_id
-  # Use Terraform workspace name for uniqueness
   warp_name  = "WARP-${terraform.workspace}"
   azure_ad_provider_id = module.idp.entra_idp_id
-  security_teams_id = module.idp.security_teams_id
-  azure_group_ids = var.security_team_group_ids
+  security_teams_id = module.idp.red_team_id # Using red team as primary security team
+  # Pass both teams' group IDs to allow both access
+  azure_group_ids = concat(var.red_team_group_ids, var.blue_team_group_ids)
   depends_on = [cloudflare_zero_trust_gateway_settings.zero_trust, module.idp]
 }
 
