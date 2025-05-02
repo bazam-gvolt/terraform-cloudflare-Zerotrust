@@ -12,8 +12,6 @@ resource "cloudflare_zero_trust_access_application" "app" {
   name                    = var.app_name
   domain                  = var.app_domain
   type                    = "self_hosted"
-  # Add skip_domain_verification for educational environments
-  skip_domain_verification = true
   
   # Add session configurations
   session_duration      = "24h"

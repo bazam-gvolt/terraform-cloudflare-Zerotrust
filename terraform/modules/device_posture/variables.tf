@@ -21,10 +21,3 @@ variable "azure_tenant_id" {
   type        = string
   default     = ""
 }
-
-# New variable for adding student identification
-variable "student_id" {
-  description = "Student identifier for educational environments"
-  type        = string
-  default     = "student"
-}
