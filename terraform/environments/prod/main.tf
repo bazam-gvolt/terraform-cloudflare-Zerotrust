@@ -1,7 +1,7 @@
 # In environments/prod/main.tf
 terraform {
   cloud {
-    organization = "StartupWorks"
+    organization = "gvolt"
     workspaces {
       name = "terraform-cloudflare-Zerotrust"
     }
