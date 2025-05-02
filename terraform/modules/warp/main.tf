@@ -7,17 +7,6 @@ terraform {
   }
 }
 
-# Comment out the allow_all policy
-# resource "cloudflare_zero_trust_gateway_policy" "allow_all" {
-#   account_id  = var.account_id
-#   name        = "Allow All Traffic"
-#   description = "Allow all traffic through WARP"
-#   precedence  = 1
-#   action      = "allow"
-#   filters     = ["dns"]
-#   traffic     = "dns.type in {'A' 'AAAA' 'CNAME' 'TXT'}"
-# }
-
 resource "cloudflare_zero_trust_gateway_policy" "block_malware" {
   account_id  = var.account_id
   name        = "Block Malware"
@@ -25,7 +14,7 @@ resource "cloudflare_zero_trust_gateway_policy" "block_malware" {
   precedence  = 2
   action      = "block"
   filters     = ["dns"]
-  traffic     = "any(dns.content_category[*] in {80})"  # Corrected traffic expression
+  traffic     = "any(dns.content_category[*] in {80})"
 }
 
 # Block Security Threats
@@ -36,9 +25,7 @@ resource "cloudflare_zero_trust_gateway_policy" "block_security_threats" {
   precedence  = 1
   action      = "block"
   filters     = ["dns"]
-  
-  # Using proper security category syntax
-  traffic = "any(dns.security_category[*] in {80})"  # Security Threats category
+  traffic     = "any(dns.security_category[*] in {80})"
 }
 
 resource "cloudflare_zero_trust_gateway_policy" "block_streaming" {
@@ -48,9 +35,7 @@ resource "cloudflare_zero_trust_gateway_policy" "block_streaming" {
   precedence  = 2
   action      = "block"
   filters     = ["http"]
-  
-  # Use http.request.uri categories instead of application field
-  traffic     = "any(http.request.uri.content_category[*] in {96})"  # 96 is streaming media category
+  traffic     = "any(http.request.uri.content_category[*] in {96})"
 }
 
 resource "cloudflare_zero_trust_gateway_policy" "cipa_filter" {
@@ -60,37 +45,39 @@ resource "cloudflare_zero_trust_gateway_policy" "cipa_filter" {
   precedence  = 3
   action      = "block"
   filters     = ["dns", "http"]
-  
-  # Use array syntax for content categories
   traffic     = "any(http.request.uri.content_category[*] in {1 4 5 6 7})"
 }
 
+# WARP Enrollment Application with unique name - use workspace name for uniqueness
 resource "cloudflare_zero_trust_access_application" "warp_enrollment_app" {
-  account_id = var.account_id
-  session_duration = "18h"
-  name = "Warp device enrollment"
-  allowed_idps = [var.azure_ad_provider_id]
+  account_id             = var.account_id
+  session_duration       = "18h"
+  name                   = "${var.warp_name} - Device Enrollment"
+  allowed_idps           = [var.azure_ad_provider_id]
   auto_redirect_to_identity = true
-  type = "warp"
-  app_launcher_visible = false
+  type                   = "warp"
+  app_launcher_visible   = false
+  
+  # Add lifecycle to prevent destroy/recreate cycles
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "cloudflare_zero_trust_access_policy" "warp_enrollment_policy" {
   application_id = cloudflare_zero_trust_access_application.warp_enrollment_app.id
-  account_id = var.account_id
-  name = "Allow Security Teams"
-  decision = "allow"
-  precedence = 1
+  account_id     = var.account_id
+  name           = "Allow Security Teams"
+  decision       = "allow"
+  precedence     = 1
   
   include {
     azure {
-      id = var.azure_group_ids # Update this to use variables instead of hardcoded IDs
+      id = var.azure_group_ids
       identity_provider_id = var.azure_ad_provider_id
     }
   }
 }
-
-# Added security_teams
 
 resource "cloudflare_zero_trust_gateway_policy" "block_all_securityrisks" {
   account_id  = var.account_id
@@ -99,11 +86,7 @@ resource "cloudflare_zero_trust_gateway_policy" "block_all_securityrisks" {
   precedence  = 1
   action      = "block"
   filters     = ["dns"]
-  
-  # Simplified traffic expression to start with
   traffic     = "any(dns.security_category[*] in {4 7 9})"
-  
-  # Remove identity condition for now - we'll add it once we get the basic policy working
 }
 
 resource "cloudflare_zero_trust_gateway_policy" "block_file_uploads_unapproved_apps" {
@@ -113,7 +96,5 @@ resource "cloudflare_zero_trust_gateway_policy" "block_file_uploads_unapproved_a
   precedence  = 2
   action      = "block"
   filters     = ["http"]
-  
-  # Using matches operator instead of contains
   traffic     = "http.request.uri matches \".*upload.*\""
 }

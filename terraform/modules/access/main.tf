@@ -8,10 +8,16 @@ terraform {
 }
 
 resource "cloudflare_zero_trust_access_application" "app" {
-  account_id  = var.account_id
-  name        = var.app_name
-  domain      = var.app_domain
-  type        = "self_hosted"
+  account_id              = var.account_id
+  name                    = var.app_name
+  domain                  = var.app_domain
+  type                    = "self_hosted"
+  # Add skip_domain_verification for educational environments
+  skip_domain_verification = true
+  
+  # Add session configurations
+  session_duration      = "24h"
+  app_launcher_visible  = true
 }
 
 resource "cloudflare_zero_trust_access_policy" "default_policy" {

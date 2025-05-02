@@ -37,14 +37,28 @@ variable "api_token" {
 }
 
 # New variables for security teams
-variable "security_team_name" {
+variable "red_team_name" {
   description = "Name for the security team access group"
   type        = string
-  default     = "Security Teams"
+  default     = "red-team"
+}
+
+# New variables for security teams
+variable "blue_team_name" {
+  description = "Name for the security team access group"
+  type        = string
+  default     = "blue-team"
 }
 
 variable "security_team_group_ids" {
   description = "List of Azure AD group IDs for security team members"
   type        = list(string)
   default     = []
+}
+
+# Add student ID variable
+variable "student_team_name" {
+  description = "Student identifier for educational environments"
+  type        = string
+  default     = "redteam"
 }
