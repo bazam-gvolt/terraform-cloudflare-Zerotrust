@@ -1,22 +1,26 @@
-variable "account_id" {
-  description = "Cloudflare Account ID"
+# Add to terraform/modules/warp/variables.tf
+variable "red_team_name" {
+  description = "Name of the Red Team group"
   type        = string
+  default     = "Red Team"
 }
 
-variable "warp_name" {
-  description = "Name for the WARP configuration"
+variable "blue_team_name" {
+  description = "Name of the Blue Team group"
   type        = string
-  default     = "Default WARP Configuration"
+  default     = "Blue Team"
 }
 
-variable "azure_ad_provider_id" {
-  description = "ID of the Azure AD identity provider created in Cloudflare"
-  type        = string
+variable "red_team_group_ids" {
+  description = "List of Azure AD group IDs for Red Team members"
+  type        = list(string)
+  default     = []
 }
-variable "security_teams_id" {
-  description = "ID of the security teams access group"
-  type        = string
-  default     = ""
+
+variable "blue_team_group_ids" {
+  description = "List of Azure AD group IDs for Blue Team members"
+  type        = list(string)
+  default     = []
 }
 
 variable "azure_group_ids" {
