@@ -62,7 +62,7 @@ resource "cloudflare_zero_trust_gateway_policy" "block_file_uploads" {
   traffic     = "http.request.method == \"POST\" and http.request.uri matches \".*upload.*\" and not(http.request.uri matches \".*(sharepoint|onedrive|teams).*\")"
 }
 
-# Security tools allowlist - DNS only with proper syntax
+# Security tools allowlist for DNS - fixed syntax
 resource "cloudflare_zero_trust_gateway_policy" "security_tools_dns" {
   account_id  = var.account_id
   name        = "Security Tools DNS Allow"
@@ -70,7 +70,7 @@ resource "cloudflare_zero_trust_gateway_policy" "security_tools_dns" {
   precedence  = 5
   action      = "allow"
   filters     = ["dns"]
-  traffic     = "dns.domains[*] in {\"kali.org\" \"metasploit.com\" \"hackerone.com\" \"splunk.com\" \"elastic.co\" \"sentinelone.com\"}"
+  traffic     = "dns.domains in {\"kali.org\" \"metasploit.com\" \"hackerone.com\" \"splunk.com\" \"elastic.co\" \"sentinelone.com\"}"
 }
 
 # Security tools allowlist - HTTP
@@ -84,7 +84,7 @@ resource "cloudflare_zero_trust_gateway_policy" "security_tools_http" {
   traffic     = "http.request.uri matches \".*security-tools.*\" or http.request.uri matches \".*security-monitor.*\""
 }
 
-# Default allow rule with properly formatted expression
+# Default allow rule with proper syntax
 resource "cloudflare_zero_trust_gateway_policy" "default_allow" {
   account_id  = var.account_id
   name        = "Default Allow Rule"
@@ -92,7 +92,8 @@ resource "cloudflare_zero_trust_gateway_policy" "default_allow" {
   precedence  = 100
   action      = "allow"
   filters     = ["dns", "http"]
-  traffic     = "1 == 1"  # Simple expression that's always true
+  # Empty string means match all traffic
+  traffic     = ""
 }
 
 # WARP enrollment application
