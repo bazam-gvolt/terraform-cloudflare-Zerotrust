@@ -49,3 +49,15 @@ variable "blue_team_group_ids" {
   type        = list(string)
   default     = []
 }
+
+variable "enable_logs" {
+  description = "Enable Gateway logs to S3"
+  type        = bool
+  default     = false
+}
+
+variable "log_bucket" {
+  description = "S3 bucket for Gateway logs"
+  type        = string
+  default     = ""
+}

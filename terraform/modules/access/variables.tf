@@ -31,9 +31,20 @@ variable "blue_team_name" {
   default     = "Blue Team"
 }
 
-# Add this new variable for the red team group IDs
 variable "red_team_group_ids" {
   description = "List of Azure AD group IDs for red team members"
+  type        = list(string)
+  default     = []
+}
+
+variable "blue_team_group_ids" {
+  description = "List of Azure AD group IDs for blue team members"
+  type        = list(string)
+  default     = []
+}
+
+variable "device_posture_rule_ids" {
+  description = "List of device posture rule IDs to require"
   type        = list(string)
   default     = []
 }

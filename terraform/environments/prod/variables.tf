@@ -61,3 +61,16 @@ variable "blue_team_group_ids" {
   type        = list(string)
   default     = []
 }
+
+# Logging configuration
+variable "enable_logs" {
+  description = "Enable logging for analysis"
+  type        = bool
+  default     = false
+}
+
+variable "log_bucket" {
+  description = "S3 bucket for storing logs"
+  type        = string
+  default     = "zero-trust-logs"
+}

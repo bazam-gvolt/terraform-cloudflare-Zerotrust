@@ -7,17 +7,46 @@ terraform {
   }
 }
 
+# Shared application (accessible by both teams)
 resource "cloudflare_zero_trust_access_application" "app" {
   account_id           = var.account_id
   name                 = var.app_name
   domain               = var.app_domain
   type                 = "self_hosted"
-  
   session_duration     = "24h"
   app_launcher_visible = true
+  
+  # Ensuring the domain verification is skipped for lab environments
+  skip_domain_verification = true
 }
 
-# Policy for email-based access
+# Red Team specific application
+resource "cloudflare_zero_trust_access_application" "red_team_app" {
+  account_id           = var.account_id
+  name                 = "Red Team - ${var.app_name}"
+  domain               = "red-${var.app_domain}"
+  type                 = "self_hosted"
+  session_duration     = "24h"
+  app_launcher_visible = true
+  
+  # Ensuring the domain verification is skipped for lab environments
+  skip_domain_verification = true
+}
+
+# Blue Team specific application
+resource "cloudflare_zero_trust_access_application" "blue_team_app" {
+  account_id           = var.account_id
+  name                 = "Blue Team - ${var.app_name}"
+  domain               = "blue-${var.app_domain}"
+  type                 = "self_hosted"
+  session_duration     = "24h"
+  app_launcher_visible = true
+  
+  # Ensuring the domain verification is skipped for lab environments
+  skip_domain_verification = true
+}
+
+# Policy for email-based access to the shared app
 resource "cloudflare_zero_trust_access_policy" "email_policy" {
   account_id     = var.account_id
   application_id = cloudflare_zero_trust_access_application.app.id
@@ -30,7 +59,7 @@ resource "cloudflare_zero_trust_access_policy" "email_policy" {
   }
 }
 
-# Red team access policy using email as a fallback
+# Red team access policy for shared app
 resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   account_id     = var.account_id
   application_id = cloudflare_zero_trust_access_application.app.id
@@ -39,6 +68,65 @@ resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   decision       = "allow"
 
   include {
-    email = var.allowed_emails  # Use the same email list as the email policy
+    group = ["${var.account_id}/${var.red_team_name}"]
+  }
+  
+  # Require device posture check for disk encryption
+  require {
+    device_posture = ["disk_encryption"]
+  }
+}
+
+# Blue team access policy for shared app
+resource "cloudflare_zero_trust_access_policy" "blue_team_policy" {
+  account_id     = var.account_id
+  application_id = cloudflare_zero_trust_access_application.app.id
+  name           = "Blue Team Access"
+  precedence     = 1
+  decision       = "allow"
+
+  include {
+    group = ["${var.account_id}/${var.blue_team_name}"]
+  }
+  
+  # Require device posture check for disk encryption
+  require {
+    device_posture = ["disk_encryption"]
+  }
+}
+
+# Red team exclusive access policy
+resource "cloudflare_zero_trust_access_policy" "red_team_exclusive_policy" {
+  account_id     = var.account_id
+  application_id = cloudflare_zero_trust_access_application.red_team_app.id
+  name           = "Red Team Only Access"
+  precedence     = 1
+  decision       = "allow"
+
+  include {
+    group = ["${var.account_id}/${var.red_team_name}"]
+  }
+  
+  # Require device posture check for disk encryption
+  require {
+    device_posture = ["disk_encryption"]
+  }
+}
+
+# Blue team exclusive access policy
+resource "cloudflare_zero_trust_access_policy" "blue_team_exclusive_policy" {
+  account_id     = var.account_id
+  application_id = cloudflare_zero_trust_access_application.blue_team_app.id
+  name           = "Blue Team Only Access"
+  precedence     = 1
+  decision       = "allow"
+
+  include {
+    group = ["${var.account_id}/${var.blue_team_name}"]
+  }
+  
+  # Require device posture check for disk encryption
+  require {
+    device_posture = ["disk_encryption"]
   }
 }

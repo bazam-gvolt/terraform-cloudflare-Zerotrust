@@ -1,75 +1,40 @@
-# Student Guide: Deploying Cloudflare Zero Trust with Terraform Cloud
+## Testing the Zero Trust Implementation
 
-This guide will help you deploy and manage Cloudflare Zero Trust configurations using Terraform Cloud.
+### WARP Client Setup
 
-## Prerequisites
+1. Download and install the Cloudflare WARP client on your device
+   - Windows: https://1.1.1.1/Cloudflare_WARP_Release-x64.msi
+   - MacOS: https://1.1.1.1/Cloudflare_WARP.pkg
+   - Linux: https://pkg.cloudflareclient.com/
 
-Before you begin:
-1. Create a Terraform Cloud account if you don't have one
-2. Join the organization provided by your instructor
-3. Prepare your Cloudflare and Azure credentials
+2. After installation, click on "Settings" in the WARP client
+3. Choose "Account" > "Login with Cloudflare for Teams"
+4. Enter your team name (the domain name from the Terraform output)
+5. You will be redirected to your identity provider login page
+6. Enter your Azure AD credentials for the Red Team or Blue Team account
 
-## Deployment Steps
+### Testing Red Team Access
 
-### 1. Create Your Workspace
+1. Once authenticated, try to access:
+   - Shared application: `https://app-[workspace].gvolt.co.uk`
+   - Red Team application: `https://red-app-[workspace].gvolt.co.uk`
+   - Blue Team application: `https://blue-app-[workspace].gvolt.co.uk` (should be denied)
 
-1. In Terraform Cloud, create a new workspace:
-   - Select "Version control workflow"
-   - Connect to the provided GitHub repository
-   - Name your workspace with your student ID (e.g., `student01-zerotrust`)
-   - Set working directory to `terraform/environments/prod`
+2. Try to access security tools:
+   - `https://kali.org`
+   - `https://metasploit.com`
+   - These should be allowed for Red Team members.
 
-### 2. Configure Variables
+### Testing Blue Team Access
 
-Add the following variables to your Terraform Cloud workspace:
+1. Once authenticated, try to access:
+   - Shared application: `https://app-[workspace].gvolt.co.uk`
+   - Blue Team application: `https://blue-app-[workspace].gvolt.co.uk`
+   - Red Team application: `https://red-app-[workspace].gvolt.co.uk` (should be denied)
 
-| Variable | Description | Sensitive? | Format |
-|----------|-------------|-----------|--------|
-| `account_id` | Cloudflare Account ID | No | String |
-| `api_token` | Cloudflare API Token | Yes | String |
-| `azure_client_id` | Azure AD Client ID | No | String |
-| `azure_client_secret` | Azure AD Client Secret | Yes | String |
-| `azure_directory_id` | Azure AD Tenant ID | No | String |
-| `intune_client_id` | Microsoft Intune Client ID | No | String |
-| `intune_client_secret` | Microsoft Intune Client Secret | Yes | String |
-| `red_team_name` | Name for the red team access group | No | String |
-| `red_team_group_ids` | List of Azure AD group IDs for red team | No | HCL list: ["id-value-here"] |
-| `blue_team_name` | Name for the blue team access group | No | String |
-| `blue_team_group_ids` | List of Azure AD group IDs for blue team | No | HCL list: ["id-value-here"] |
+2. Try to access monitoring tools:
+   - `https://splunk.com`
+   - `https://elastic.co`
+   - These should be allowed for Blue Team members.
 
-**Important**: When entering Azure AD group IDs, they must be formatted as HCL lists with square brackets, e.g., `["00000000-0000-0000-0000-000000000000"]` even if there's only one ID.
-
-### 3. Run the Deployment
-
-1. Go to the "Runs" tab in your workspace
-2. Click "Queue plan manually"
-3. Review the plan output carefully
-4. If everything looks good, click "Confirm & Apply"
-
-### 4. Troubleshooting
-
-If you encounter errors during the deployment:
-
-#### Domain Validation Error (12130)
-This is expected for lab environments. The code includes `skip_domain_verification = true` to bypass this check.
-
-#### Application Already Exists Error (11010)
-The WARP enrollment application name is set to include your workspace name for uniqueness. If you still encounter this issue, you may need to delete the application manually in the Cloudflare dashboard.
-
-#### HTTP 500 Error with Intune Integration
-Check your Intune credentials and make sure the application has the necessary permissions. The code includes retry logic to handle temporary issues.
-
-### 5. Cleanup
-
-When you've completed the lab:
-1. Go to the "Settings" tab in your workspace
-2. Scroll down to "Destruction and Deletion"
-3. Click "Queue destroy plan"
-4. Confirm to remove all created resources
-
-## Support
-
-If you need assistance:
-1. Check the error messages in the Terraform Cloud run output
-2. Review the troubleshooting section in this guide
-3. Contact your instructor with specific error details
+### Device Posture Testing

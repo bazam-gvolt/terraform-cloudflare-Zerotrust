@@ -84,6 +84,61 @@ resource "cloudflare_zero_trust_gateway_policy" "security_tools_http" {
   traffic     = "http.request.uri matches \".*security-tools.*\" or http.request.uri matches \".*security-monitor.*\""
 }
 
+# Allow access to essential categories (education, business, government)
+resource "cloudflare_zero_trust_gateway_policy" "allow_essential_categories" {
+  account_id  = var.account_id
+  name        = "Allow Essential Categories"
+  description = "Allow access to educational, business, and government sites"
+  precedence  = 50
+  action      = "allow"
+  filters     = ["http"]
+  traffic     = "any(http.request.uri.content_category[*] in {12 13 18})"
+}
+
+# Red Team special access - allow broader web categories
+resource "cloudflare_zero_trust_gateway_policy" "red_team_special_access" {
+  account_id  = var.account_id
+  name        = "Red Team Special Access"
+  description = "Allow Red Team to access security testing tools"
+  precedence  = 7
+  action      = "allow"
+  filters     = ["http", "dns"]
+  traffic     = "any(dns.domains[*] matches \".*security.*|.*pentest.*|.*hack.*\")"
+  
+  # Only apply this policy to Red Team members
+  identity {
+    groups = [var.red_team_name]
+  }
+}
+
+# Blue Team special access - allow access to monitoring tools
+resource "cloudflare_zero_trust_gateway_policy" "blue_team_special_access" {
+  account_id  = var.account_id
+  name        = "Blue Team Special Access"
+  description = "Allow Blue Team to access monitoring and analytics tools"
+  precedence  = 8
+  action      = "allow"
+  filters     = ["http", "dns"]
+  traffic     = "any(dns.domains[*] matches \".*monitor.*|.*analytics.*|.*siem.*\")"
+  
+  # Only apply this policy to Blue Team members
+  identity {
+    groups = [var.blue_team_name]
+  }
+}
+
+# Default block rule for everything else
+resource "cloudflare_zero_trust_gateway_policy" "default_block" {
+  account_id  = var.account_id
+  name        = "Default Block Rule"
+  description = "Block all other traffic"
+  precedence  = 999
+  action      = "block"
+  filters     = ["dns", "http"]
+  # Simple expression that will match any remaining traffic
+  traffic     = "true"
+}
+
 # WARP enrollment application
 resource "cloudflare_zero_trust_access_application" "warp_enrollment_app" {
   account_id             = var.account_id
@@ -128,4 +183,19 @@ resource "cloudflare_zero_trust_access_policy" "blue_team_warp_policy" {
       identity_provider_id = var.azure_ad_provider_id
     }
   }
+}
+
+# Enable gateway logging for analysis
+resource "cloudflare_logpush_job" "gateway_logs" {
+  count      = var.enable_logs ? 1 : 0
+  name       = "gateway-logs"
+  account_id = var.account_id
+  dataset    = "gateway_dns"
+  destination_conf = "s3://${var.log_bucket}/gateway-logs?region=auto"
+  
+  logpull_options = "fields=ClientIP,ClientRequestHost,ClientRequestPath,ClientRequestQuery,EdgeResponseBytes"
+  
+  filter = ""
+  
+  enabled = true
 }

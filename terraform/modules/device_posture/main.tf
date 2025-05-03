@@ -57,3 +57,69 @@ resource "cloudflare_zero_trust_device_posture_rule" "disk_encryption" {
   
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
 }
+
+# Firewall Check - additional security
+resource "cloudflare_zero_trust_device_posture_rule" "firewall_check" {
+  account_id  = var.account_id
+  name        = "Firewall Status Check"
+  description = "Ensure device firewall is enabled"
+  type        = "firewall"
+  
+  match {
+    platform = "windows"
+  }
+  
+  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
+}
+
+# Antivirus Check - additional security
+resource "cloudflare_zero_trust_device_posture_rule" "antivirus_check" {
+  account_id  = var.account_id
+  name        = "Antivirus Status Check"
+  description = "Ensure device has antivirus enabled"
+  type        = "sentinelone"
+  
+  match {
+    platform = "windows"
+  }
+  
+  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
+}
+
+# File existence check for Blue Team
+resource "cloudflare_zero_trust_device_posture_rule" "blue_team_file_check" {
+  account_id  = var.account_id
+  name        = "Blue Team File Check"
+  description = "Check for presence of Blue Team software"
+  type        = "file"
+  
+  match {
+    platform = "windows"
+  }
+  
+  input {
+    path_expression = "%PROGRAMFILES%\\BlueTeam\\agent.exe"
+    exists = true
+  }
+  
+  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
+}
+
+# File existence check for Red Team
+resource "cloudflare_zero_trust_device_posture_rule" "red_team_file_check" {
+  account_id  = var.account_id
+  name        = "Red Team File Check"
+  description = "Check for presence of Red Team software"
+  type        = "file"
+  
+  match {
+    platform = "windows"
+  }
+  
+  input {
+    path_expression = "%PROGRAMFILES%\\RedTeam\\agent.exe"
+    exists = true
+  }
+  
+  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
+}

@@ -19,8 +19,6 @@ provider "cloudflare" {
   retries   = 3
 }
 
-# Rest of the file remains unchanged
-
 # Global Zero Trust configuration
 resource "cloudflare_zero_trust_gateway_settings" "zero_trust" {
   account_id = var.account_id
@@ -48,7 +46,6 @@ module "device_posture" {
   depends_on = [cloudflare_zero_trust_gateway_settings.zero_trust]
 }
 
-# Update in terraform/environments/prod/main.tf
 module "warp" {
   source = "../../modules/warp"
   account_id = var.account_id
@@ -56,11 +53,12 @@ module "warp" {
   azure_ad_provider_id = module.idp.entra_idp_id
   security_teams_id = module.idp.red_team_id
   azure_group_ids = concat(var.red_team_group_ids, var.blue_team_group_ids)
-  # Add these lines
   red_team_name = var.red_team_name
   blue_team_name = var.blue_team_name
   red_team_group_ids = var.red_team_group_ids
   blue_team_group_ids = var.blue_team_group_ids
+  enable_logs = var.enable_logs
+  log_bucket = var.log_bucket
   depends_on = [cloudflare_zero_trust_gateway_settings.zero_trust, module.idp]
 }
 
@@ -80,5 +78,11 @@ module "access" {
   allowed_emails = ["user@gvolt.co.uk"]
   red_team_name  = var.red_team_name
   blue_team_name = var.blue_team_name
-  depends_on     = [cloudflare_zero_trust_gateway_settings.zero_trust]
+  red_team_group_ids = var.red_team_group_ids
+  blue_team_group_ids = var.blue_team_group_ids
+  device_posture_rule_ids = [
+    module.device_posture.disk_encryption_rule_id,
+    module.device_posture.os_version_rule_id
+  ]
+  depends_on     = [cloudflare_zero_trust_gateway_settings.zero_trust, module.device_posture]
 }
