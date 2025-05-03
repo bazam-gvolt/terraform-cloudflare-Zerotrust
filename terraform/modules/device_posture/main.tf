@@ -25,6 +25,21 @@ resource "cloudflare_zero_trust_device_posture_integration" "intune_integration"
   }
 }
 
+# Intune Compliance Check
+resource "cloudflare_zero_trust_device_posture_rule" "intune_compliance" {
+  account_id  = var.account_id
+  name        = "Intune Compliance Check"
+  description = "Check if device is compliant according to Intune"
+  type        = "intune"
+  
+  input {
+    compliance_status = "compliant"
+    connection_id     = cloudflare_zero_trust_device_posture_integration.intune_integration.id
+  }
+  
+  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
+}
+
 # OS Version Check with corrected version format
 resource "cloudflare_zero_trust_device_posture_rule" "os_version_windows" {
   account_id  = var.account_id
@@ -72,53 +87,15 @@ resource "cloudflare_zero_trust_device_posture_rule" "firewall_check" {
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
 }
 
-# Antivirus Check - additional security
-resource "cloudflare_zero_trust_device_posture_rule" "antivirus_check" {
+# Domain Join Check - additional security
+resource "cloudflare_zero_trust_device_posture_rule" "domain_joined_check" {
   account_id  = var.account_id
-  name        = "Antivirus Status Check"
-  description = "Ensure device has antivirus enabled"
-  type        = "sentinelone"
+  name        = "Domain Joined Check"
+  description = "Ensure device is domain joined"
+  type        = "domain_joined"
   
   match {
     platform = "windows"
-  }
-  
-  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
-}
-
-# File existence check for Blue Team - CORRECTED
-resource "cloudflare_zero_trust_device_posture_rule" "blue_team_file_check" {
-  account_id  = var.account_id
-  name        = "Blue Team File Check"
-  description = "Check for presence of Blue Team software"
-  type        = "file"
-  
-  match {
-    platform = "windows"
-  }
-  
-  input {
-    file_path = "%PROGRAMFILES%\BlueTeam\agent.txt"
-    exists = true
-  }
-  
-  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
-}
-
-# File existence check for Red Team - CORRECTED
-resource "cloudflare_zero_trust_device_posture_rule" "red_team_file_check" {
-  account_id  = var.account_id
-  name        = "Red Team File Check"
-  description = "Check for presence of Red Team software"
-  type        = "file"
-  
-  match {
-    platform = "windows"
-  }
-  
-  input {
-    file_path = "%PROGRAMFILES%\RedTeam\agent.txt"
-    exists = true
   }
   
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]

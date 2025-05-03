@@ -70,6 +70,7 @@ module "gateway" {
   depends_on    = [cloudflare_zero_trust_gateway_settings.zero_trust]
 }
 
+# In the access module section, update the device_posture_rule_ids
 module "access" {
   source = "../../modules/access"
   account_id     = var.account_id
@@ -82,7 +83,8 @@ module "access" {
   blue_team_group_ids = var.blue_team_group_ids
   device_posture_rule_ids = [
     module.device_posture.disk_encryption_rule_id,
-    module.device_posture.os_version_rule_id
+    module.device_posture.os_version_rule_id,
+    module.device_posture.intune_compliance_rule_id
   ]
   depends_on     = [cloudflare_zero_trust_gateway_settings.zero_trust, module.device_posture]
 }
