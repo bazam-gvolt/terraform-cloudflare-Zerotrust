@@ -70,7 +70,7 @@ module "access" {
   source = "../../modules/access"
   account_id     = var.account_id
   app_name       = "gvolt-${terraform.workspace}"
-  app_domain     = "app-${terraform.workspace}.example.com"
+  app_domain     = "app-${terraform.workspace}.gvolt.co.uk"
   allowed_emails = ["user@gvolt.co.uk"]
   depends_on     = [cloudflare_zero_trust_gateway_settings.zero_trust]
 }
