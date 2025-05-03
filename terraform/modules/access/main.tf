@@ -15,9 +15,6 @@ resource "cloudflare_zero_trust_access_application" "app" {
   type                 = "self_hosted"
   session_duration     = "24h"
   app_launcher_visible = true
-  
-  # Ensuring the domain verification is skipped for lab environments
-  skip_domain_verification = true
 }
 
 # Red Team specific application
@@ -28,9 +25,6 @@ resource "cloudflare_zero_trust_access_application" "red_team_app" {
   type                 = "self_hosted"
   session_duration     = "24h"
   app_launcher_visible = true
-  
-  # Ensuring the domain verification is skipped for lab environments
-  skip_domain_verification = true
 }
 
 # Blue Team specific application
@@ -41,9 +35,6 @@ resource "cloudflare_zero_trust_access_application" "blue_team_app" {
   type                 = "self_hosted"
   session_duration     = "24h"
   app_launcher_visible = true
-  
-  # Ensuring the domain verification is skipped for lab environments
-  skip_domain_verification = true
 }
 
 # Policy for email-based access to the shared app
