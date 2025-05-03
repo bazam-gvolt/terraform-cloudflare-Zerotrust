@@ -95,7 +95,7 @@ resource "cloudflare_zero_trust_gateway_policy" "allow_essential_categories" {
   traffic     = "any(http.request.uri.content_category[*] in {12 13 18})"
 }
 
-# Red Team special access - allow broader web categories
+# Red Team special access - allow broader web categories - CORRECTED
 resource "cloudflare_zero_trust_gateway_policy" "red_team_special_access" {
   account_id  = var.account_id
   name        = "Red Team Special Access"
@@ -103,15 +103,10 @@ resource "cloudflare_zero_trust_gateway_policy" "red_team_special_access" {
   precedence  = 7
   action      = "allow"
   filters     = ["http", "dns"]
-  traffic     = "any(dns.domains[*] matches \".*security.*|.*pentest.*|.*hack.*\")"
-  
-  # Only apply this policy to Red Team members
-  identity {
-    groups = [var.red_team_name]
-  }
+  traffic     = "any(dns.domains[*] matches \".*security.*|.*pentest.*|.*hack.*\") and user.groups[*] in {\"${var.red_team_name}\"}"
 }
 
-# Blue Team special access - allow access to monitoring tools
+# Blue Team special access - allow access to monitoring tools - CORRECTED
 resource "cloudflare_zero_trust_gateway_policy" "blue_team_special_access" {
   account_id  = var.account_id
   name        = "Blue Team Special Access"
@@ -119,12 +114,7 @@ resource "cloudflare_zero_trust_gateway_policy" "blue_team_special_access" {
   precedence  = 8
   action      = "allow"
   filters     = ["http", "dns"]
-  traffic     = "any(dns.domains[*] matches \".*monitor.*|.*analytics.*|.*siem.*\")"
-  
-  # Only apply this policy to Blue Team members
-  identity {
-    groups = [var.blue_team_name]
-  }
+  traffic     = "any(dns.domains[*] matches \".*monitor.*|.*analytics.*|.*siem.*\") and user.groups[*] in {\"${var.blue_team_name}\"}"
 }
 
 # Default block rule for everything else
@@ -185,7 +175,7 @@ resource "cloudflare_zero_trust_access_policy" "blue_team_warp_policy" {
   }
 }
 
-# Enable gateway logging for analysis
+# Enable gateway logging for analysis - conditional based on variable
 resource "cloudflare_logpush_job" "gateway_logs" {
   count      = var.enable_logs ? 1 : 0
   name       = "gateway-logs"
@@ -194,8 +184,6 @@ resource "cloudflare_logpush_job" "gateway_logs" {
   destination_conf = "s3://${var.log_bucket}/gateway-logs?region=auto"
   
   logpull_options = "fields=ClientIP,ClientRequestHost,ClientRequestPath,ClientRequestQuery,EdgeResponseBytes"
-  
-  filter = ""
   
   enabled = true
 }

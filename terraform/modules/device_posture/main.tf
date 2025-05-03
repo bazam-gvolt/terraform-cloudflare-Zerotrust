@@ -86,7 +86,7 @@ resource "cloudflare_zero_trust_device_posture_rule" "antivirus_check" {
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
 }
 
-# File existence check for Blue Team
+# File existence check for Blue Team - CORRECTED
 resource "cloudflare_zero_trust_device_posture_rule" "blue_team_file_check" {
   account_id  = var.account_id
   name        = "Blue Team File Check"
@@ -98,14 +98,14 @@ resource "cloudflare_zero_trust_device_posture_rule" "blue_team_file_check" {
   }
   
   input {
-    path_expression = "%PROGRAMFILES%\\BlueTeam\\agent.exe"
+    file_path = "%PROGRAMFILES%\\BlueTeam\\agent.exe"
     exists = true
   }
   
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
 }
 
-# File existence check for Red Team
+# File existence check for Red Team - CORRECTED
 resource "cloudflare_zero_trust_device_posture_rule" "red_team_file_check" {
   account_id  = var.account_id
   name        = "Red Team File Check"
@@ -117,7 +117,7 @@ resource "cloudflare_zero_trust_device_posture_rule" "red_team_file_check" {
   }
   
   input {
-    path_expression = "%PROGRAMFILES%\\RedTeam\\agent.exe"
+    file_path = "%PROGRAMFILES%\\RedTeam\\agent.exe"
     exists = true
   }
   
