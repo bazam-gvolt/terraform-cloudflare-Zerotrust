@@ -30,7 +30,7 @@ resource "cloudflare_zero_trust_access_policy" "email_policy" {
   }
 }
 
-# Red team access policy using group name
+# Red team access policy using email as a fallback
 resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   account_id     = var.account_id
   application_id = cloudflare_zero_trust_access_application.app.id
@@ -39,6 +39,6 @@ resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   decision       = "allow"
 
   include {
-    group = ["${var.account_id}/${var.red_team_name}"]
+    email = var.allowed_emails  # Use the same email list as the email policy
   }
 }
