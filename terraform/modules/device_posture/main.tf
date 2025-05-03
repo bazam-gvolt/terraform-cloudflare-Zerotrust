@@ -38,9 +38,12 @@ resource "cloudflare_zero_trust_device_posture_rule" "os_version_windows" {
   }
   
   input {
-    version = "10.0"
+    version = "10"  # Changed from "10.0" to "10"
     operator = ">="
   }
+  
+  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
+}
   
   # Ensure we create the integration first
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
