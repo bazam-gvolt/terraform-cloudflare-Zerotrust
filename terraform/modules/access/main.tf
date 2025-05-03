@@ -12,6 +12,7 @@ resource "cloudflare_zero_trust_access_application" "app" {
   name                    = var.app_name
   domain                  = var.app_domain
   type                    = "self_hosted"
+  skip_domain_verification = true  # Add this line to bypass domain validation
   
   # Add session configurations
   session_duration      = "24h"
