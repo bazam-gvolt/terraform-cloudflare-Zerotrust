@@ -73,7 +73,7 @@ resource "cloudflare_zero_trust_access_policy" "blue_team_policy" {
   account_id     = var.account_id
   application_id = cloudflare_zero_trust_access_application.app.id
   name           = "Blue Team Access"
-  precedence     = 1
+  precedence     = 3  # Changed from 1 to 3 to make it unique
   decision       = "allow"
 
   include {

@@ -127,8 +127,8 @@ resource "cloudflare_zero_trust_gateway_policy" "default_block" {
   precedence  = 999
   action      = "block"
   filters     = ["dns"]
-  # Changed from "true" to valid domain matching expression
-  traffic     = "dns.domains[*] matches \".*\""
+  # Fix the traffic filter syntax
+  traffic     = "any(dns.domains[*] matches \".*\")"
 }
 
 # WARP enrollment application
