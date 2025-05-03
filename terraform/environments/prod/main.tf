@@ -69,8 +69,8 @@ module "gateway" {
 module "access" {
   source = "../../modules/access"
   account_id     = var.account_id
-  app_name       = "StartupWorks-${terraform.workspace}"
+  app_name       = "gvolt-${terraform.workspace}"
   app_domain     = "app-${terraform.workspace}.example.com"
-  allowed_emails = ["user@StartupWorks.io"]
+  allowed_emails = ["user@gvolt.co.uk"]
   depends_on     = [cloudflare_zero_trust_gateway_settings.zero_trust]
 }
