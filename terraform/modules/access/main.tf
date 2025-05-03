@@ -13,7 +13,7 @@ resource "cloudflare_zero_trust_access_application" "app" {
   domain               = var.app_domain
   type                 = "self_hosted"
   
-  session_duration    = "24h"
+  session_duration     = "24h"
   app_launcher_visible = true
 }
 
@@ -30,7 +30,7 @@ resource "cloudflare_zero_trust_access_policy" "email_policy" {
   }
 }
 
-# Red team access policy using correct syntax for Azure groups
+# Red team access policy using group format
 resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   account_id     = var.account_id
   application_id = cloudflare_zero_trust_access_application.app.id
@@ -41,5 +41,4 @@ resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   include {
     group = ["${var.account_id}/${var.red_team_name}"]
   }
-}
 }
