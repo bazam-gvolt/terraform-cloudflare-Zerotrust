@@ -98,7 +98,7 @@ resource "cloudflare_zero_trust_device_posture_rule" "blue_team_file_check" {
   }
   
   input {
-    file_path = "%PROGRAMFILES%\\BlueTeam\\agent.exe"
+    file_path = "%PROGRAMFILES%\BlueTeam\agent.txt"
     exists = true
   }
   
@@ -117,7 +117,7 @@ resource "cloudflare_zero_trust_device_posture_rule" "red_team_file_check" {
   }
   
   input {
-    file_path = "%PROGRAMFILES%\\RedTeam\\agent.exe"
+    file_path = "%PROGRAMFILES%\RedTeam\agent.txt"
     exists = true
   }
   
