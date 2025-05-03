@@ -53,6 +53,11 @@ resource "cloudflare_zero_trust_access_group" "secure_devices" {
   account_id = var.account_id
   name       = "Secure Devices"
   
+  # Add an include block with a valid selector that will include all users
+  include {
+    everyone = true
+  }
+  
   require {
     device_posture = ["disk_encryption", "os_version"]
   }
