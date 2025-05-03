@@ -84,7 +84,7 @@ resource "cloudflare_zero_trust_gateway_policy" "security_tools_http" {
   traffic     = "http.request.uri matches \".*security-tools.*\" or http.request.uri matches \".*security-monitor.*\""
 }
 
-# Default allow rule with a basic condition that will work
+# Default allow rule using port condition
 resource "cloudflare_zero_trust_gateway_policy" "default_allow" {
   account_id  = var.account_id
   name        = "Default Allow Rule"
@@ -92,7 +92,7 @@ resource "cloudflare_zero_trust_gateway_policy" "default_allow" {
   precedence  = 100
   action      = "allow"
   filters     = ["dns", "http"]
-  traffic     = "http.host != \"\" or dns"
+  traffic     = "net.port > 0"  # This condition should always be true for valid traffic
 }
 
 # WARP enrollment application
