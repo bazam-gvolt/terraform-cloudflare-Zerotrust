@@ -17,3 +17,8 @@ output "firewall_rule_id" {
   value = cloudflare_zero_trust_device_posture_rule.firewall_check.id
   description = "The ID of the firewall posture rule"
 }
+
+output "domain_joined_rule_id" {
+  value = cloudflare_zero_trust_device_posture_rule.domain_joined_check.id
+  description = "The ID of the domain joined posture rule"
+}

@@ -86,3 +86,21 @@ resource "cloudflare_zero_trust_device_posture_rule" "firewall_check" {
   
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
 }
+
+# Domain Join Check - additional security
+resource "cloudflare_zero_trust_device_posture_rule" "domain_joined_check" {
+  account_id  = var.account_id
+  name        = "Domain Joined Check"
+  description = "Ensure device is domain joined"
+  type        = "domain_joined"
+  
+  match {
+    platform = "windows"
+  }
+  
+  input {
+    domain_names = ["ReddomeLAB.onmicrosoft.com"]
+  }
+  
+  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
+}
