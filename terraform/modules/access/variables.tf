@@ -30,3 +30,10 @@ variable "blue_team_name" {
   type        = string
   default     = "Blue Team"
 }
+
+# Add this new variable for the red team group IDs
+variable "red_team_group_ids" {
+  description = "List of Azure AD group IDs for red team members"
+  type        = list(string)
+  default     = []
+}
