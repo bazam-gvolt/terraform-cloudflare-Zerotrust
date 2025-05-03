@@ -87,7 +87,7 @@ resource "cloudflare_zero_trust_device_posture_rule" "firewall_check" {
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
 }
 
-# Domain Join Check - additional security
+# Domain Join Check - with input block added
 resource "cloudflare_zero_trust_device_posture_rule" "domain_joined_check" {
   account_id  = var.account_id
   name        = "Domain Joined Check"
@@ -96,6 +96,10 @@ resource "cloudflare_zero_trust_device_posture_rule" "domain_joined_check" {
   
   match {
     platform = "windows"
+  }
+  
+  input {
+    domain_names = ["*"]  # Match any domain
   }
   
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]

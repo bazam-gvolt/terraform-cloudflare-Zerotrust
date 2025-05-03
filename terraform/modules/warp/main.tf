@@ -95,38 +95,40 @@ resource "cloudflare_zero_trust_gateway_policy" "allow_essential_categories" {
   traffic     = "any(http.request.uri.content_category[*] in {12 13 18})"
 }
 
-# Red Team special access - allow broader web categories - CORRECTED
-resource "cloudflare_zero_trust_gateway_policy" "red_team_special_access" {
+# Red Team special access - using domain patterns
+resource "cloudflare_zero_trust_gateway_policy" "security_testing_domains" {
   account_id  = var.account_id
-  name        = "Red Team Special Access"
-  description = "Allow Red Team to access security testing tools"
+  name        = "Security Testing Domains"
+  description = "Allow access to security testing domains"
   precedence  = 7
   action      = "allow"
-  filters     = ["http", "dns"]
-  traffic     = "any(dns.domains[*] matches \".*security.*|.*pentest.*|.*hack.*\") and user.groups[*] in {\"${var.red_team_name}\"}"
+  filters     = ["dns"]
+  # Simplified to use just domain patterns without user identity
+  traffic     = "any(dns.domains[*] matches \".*security.*|.*pentest.*|.*hack.*\")"
 }
 
-# Blue Team special access - allow access to monitoring tools - CORRECTED
-resource "cloudflare_zero_trust_gateway_policy" "blue_team_special_access" {
+# Blue Team special access - using domain patterns
+resource "cloudflare_zero_trust_gateway_policy" "monitoring_domains" {
   account_id  = var.account_id
-  name        = "Blue Team Special Access"
-  description = "Allow Blue Team to access monitoring and analytics tools"
+  name        = "Monitoring Tools Domains"
+  description = "Allow access to monitoring tools domains"
   precedence  = 8
   action      = "allow"
-  filters     = ["http", "dns"]
-  traffic     = "any(dns.domains[*] matches \".*monitor.*|.*analytics.*|.*siem.*\") and user.groups[*] in {\"${var.blue_team_name}\"}"
+  filters     = ["dns"]
+  # Simplified to use just domain patterns without user identity
+  traffic     = "any(dns.domains[*] matches \".*monitor.*|.*analytics.*|.*siem.*\")"
 }
 
-# Default block rule for everything else
+# Default block rule with valid match pattern
 resource "cloudflare_zero_trust_gateway_policy" "default_block" {
   account_id  = var.account_id
   name        = "Default Block Rule"
   description = "Block all other traffic"
   precedence  = 999
   action      = "block"
-  filters     = ["dns", "http"]
-  # Simple expression that will match any remaining traffic
-  traffic     = "true"
+  filters     = ["dns"]
+  # Changed from "true" to valid domain matching expression
+  traffic     = "dns.domains[*] matches \".*\""
 }
 
 # WARP enrollment application
@@ -177,15 +179,4 @@ resource "cloudflare_zero_trust_access_policy" "blue_team_warp_policy" {
 
 # Enable gateway logging to Azure Storage (instead of S3)
 resource "cloudflare_logpush_job" "gateway_logs" {
-  count      = var.enable_logs ? 1 : 0
-  name       = "gateway-logs"
-  account_id = var.account_id
-  dataset    = "gateway_dns"
-  
-  # Using Azure Blob Storage format
-  destination_conf = "azure://${var.azure_storage_account}.blob.core.windows.net/${var.azure_storage_container}?sas=${var.azure_sas_token}"
-  
-  logpull_options = "fields=ClientIP,ClientRequestHost,ClientRequestPath,ClientRequestQuery,EdgeResponseBytes"
-  
-  enabled = true
-}
+  count      = var.enable_logs

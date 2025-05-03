@@ -72,7 +72,6 @@ module "gateway" {
   depends_on    = [cloudflare_zero_trust_gateway_settings.zero_trust]
 }
 
-# Update the access module to pass rule group IDs
 module "access" {
   source = "../../modules/access"
   account_id     = var.account_id

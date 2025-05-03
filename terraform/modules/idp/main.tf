@@ -7,8 +7,6 @@ terraform {
   }
 }
 
-# Rest of the file remains unchanged
-
 resource "cloudflare_zero_trust_access_identity_provider" "microsoft_entra_id" {
   account_id = var.account_id
   name       = "Microsoft Entra ID"
@@ -53,7 +51,7 @@ resource "cloudflare_zero_trust_access_group" "secure_devices" {
   account_id = var.account_id
   name       = "Secure Devices"
   
-  # Add an include block with a valid selector that will include all users
+  # Add an include block with everyone = true to meet requirement
   include {
     everyone = true
   }
