@@ -30,7 +30,7 @@ resource "cloudflare_zero_trust_access_policy" "email_policy" {
   }
 }
 
-# Red team access policy using Azure authentication
+# Red team access policy using correct syntax for Azure groups
 resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   account_id     = var.account_id
   application_id = cloudflare_zero_trust_access_application.app.id
@@ -39,9 +39,7 @@ resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   decision       = "allow"
 
   include {
-    azure {
-      id = var.red_team_group_ids
-      identity_provider_id = var.account_id
-    }
+    group = ["${var.account_id}/${var.red_team_name}"]
   }
+}
 }
