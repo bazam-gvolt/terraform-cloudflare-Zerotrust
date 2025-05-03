@@ -44,10 +44,6 @@ resource "cloudflare_zero_trust_device_posture_rule" "os_version_windows" {
   
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
 }
-  
-  # Ensure we create the integration first
-  depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
-}
 
 # Disk Encryption Check with fixed configuration
 resource "cloudflare_zero_trust_device_posture_rule" "disk_encryption" {
@@ -60,6 +56,5 @@ resource "cloudflare_zero_trust_device_posture_rule" "disk_encryption" {
     platform = "windows"
   }
   
-  # Ensure we create the integration first
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
 }

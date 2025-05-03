@@ -7,7 +7,6 @@ terraform {
   }
 }
 
-# In access/main.tf
 resource "cloudflare_zero_trust_access_application" "app" {
   account_id              = var.account_id
   name                    = var.app_name
@@ -18,9 +17,7 @@ resource "cloudflare_zero_trust_access_application" "app" {
   session_duration      = "24h"
   app_launcher_visible  = true
   
-  # Either add allowed_idps or remove auto_redirect
-  # allowed_idps         = ["your-idp-id-here"]
-  # auto_redirect_to_identity = true
+  # Remove these commented lines for clarity
 }
 
 # Policy for email-based access
