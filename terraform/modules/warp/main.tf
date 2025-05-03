@@ -2,7 +2,7 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 5.0"  # Updated to version 5
+      version = "~> 4.0"  # Keep at version 4
     }
   }
 }
@@ -92,7 +92,7 @@ resource "cloudflare_zero_trust_gateway_policy" "default_allow" {
   precedence  = 100
   action      = "allow"
   filters     = ["dns", "http"]
-  traffic     = "true"  # Always evaluates to true in v5
+  traffic     = "true"  # Simple boolean expression
 }
 
 # WARP enrollment application

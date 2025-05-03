@@ -2,7 +2,7 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = ">=5.0"  # Updated to version 5
+      version = ">=4.40.0"  # Keep compatible with version 4
     }
   }
 }
