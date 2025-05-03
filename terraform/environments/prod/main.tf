@@ -72,5 +72,7 @@ module "access" {
   app_name       = "gvolt-${terraform.workspace}"
   app_domain     = "app-${terraform.workspace}.gvolt.co.uk"
   allowed_emails = ["user@gvolt.co.uk"]
+  red_team_name  = var.red_team_name
+  blue_team_name = var.blue_team_name
   depends_on     = [cloudflare_zero_trust_gateway_settings.zero_trust]
 }

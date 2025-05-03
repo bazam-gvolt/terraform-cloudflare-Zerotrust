@@ -18,3 +18,15 @@ variable "allowed_emails" {
   type        = list(string)
   default     = []
 }
+
+variable "red_team_name" {
+  description = "Name of the Red Team group"
+  type        = string
+  default     = "Red Team"
+}
+
+variable "blue_team_name" {
+  description = "Name of the Blue Team group"
+  type        = string
+  default     = "Blue Team"
+}
