@@ -2,7 +2,7 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"  # Updated to version 5
     }
   }
 }
@@ -12,7 +12,7 @@ resource "cloudflare_zero_trust_device_posture_integration" "intune_integration"
   account_id = var.account_id
   name       = "Microsoft Intune Integration"
   type       = "intune"
-  interval   = "15m"  # Increased interval to reduce API pressure
+  interval   = "15m"
   
   config {
     client_id     = var.intune_client_id
@@ -20,13 +20,12 @@ resource "cloudflare_zero_trust_device_posture_integration" "intune_integration"
     customer_id   = var.azure_tenant_id
   }
   
-  # Add lifecycle to prevent destroy/recreate cycles
   lifecycle {
     create_before_destroy = true
   }
 }
 
-# OS Version Check with updated configuration
+# OS Version Check with corrected version format
 resource "cloudflare_zero_trust_device_posture_rule" "os_version_windows" {
   account_id  = var.account_id
   name        = "Windows OS Version Check"
@@ -38,14 +37,14 @@ resource "cloudflare_zero_trust_device_posture_rule" "os_version_windows" {
   }
   
   input {
-    version = "10"  # Changed from "10.0" to "10"
+    version = "10.0.0"  # Fixed semver format
     operator = ">="
   }
   
   depends_on = [cloudflare_zero_trust_device_posture_integration.intune_integration]
 }
 
-# Disk Encryption Check with fixed configuration
+# Disk Encryption Check
 resource "cloudflare_zero_trust_device_posture_rule" "disk_encryption" {
   account_id  = var.account_id
   name        = "Disk Encryption Check"

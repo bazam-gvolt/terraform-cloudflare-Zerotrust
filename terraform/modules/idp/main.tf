@@ -1,12 +1,13 @@
-# terraform/modules/idp/main.tf
 terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = ">=4.40.0"
+      version = ">=5.0"  # Updated to version 5
     }
   }
 }
+
+# Rest of the file remains unchanged
 
 resource "cloudflare_zero_trust_access_identity_provider" "microsoft_entra_id" {
   account_id = var.account_id

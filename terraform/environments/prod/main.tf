@@ -1,4 +1,3 @@
-# In environments/prod/main.tf
 terraform {
   cloud {
     organization = "gvolt"
@@ -10,7 +9,7 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"  # Updated to version 5
     }
   }
 }
@@ -19,6 +18,8 @@ provider "cloudflare" {
   api_token = var.api_token
   retries   = 3
 }
+
+# Rest of the file remains unchanged
 
 # Global Zero Trust configuration
 resource "cloudflare_zero_trust_gateway_settings" "zero_trust" {

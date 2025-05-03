@@ -2,7 +2,7 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"  # Updated to version 5
     }
   }
 }
@@ -15,7 +15,7 @@ resource "cloudflare_zero_trust_gateway_policy" "consolidated_security_blocks" {
   precedence  = 10
   action      = "block"
   filters     = ["dns"]
-  traffic     = "any(dns.security_category[*] in {4 7 9 80})"  # Consolidated security categories
+  traffic     = "any(dns.security_category[*] in {4 7 9 80})"
 }
 
 # Content filtering for DNS
@@ -26,7 +26,7 @@ resource "cloudflare_zero_trust_gateway_policy" "content_filtering_dns" {
   precedence  = 20
   action      = "block"
   filters     = ["dns"]
-  traffic     = "any(dns.content_category[*] in {1 4 5 6 7})"  
+  traffic     = "any(dns.content_category[*] in {1 4 5 6 7})"
 }
 
 # Content filtering for HTTP 
@@ -62,7 +62,7 @@ resource "cloudflare_zero_trust_gateway_policy" "block_file_uploads" {
   traffic     = "http.request.method == \"POST\" and http.request.uri matches \".*upload.*\" and not(http.request.uri matches \".*(sharepoint|onedrive|teams).*\")"
 }
 
-# Security tools allowlist - DNS only
+# Security tools allowlist - DNS only with fixed syntax
 resource "cloudflare_zero_trust_gateway_policy" "security_tools_dns" {
   account_id  = var.account_id
   name        = "Security Tools DNS Allow"
@@ -70,7 +70,7 @@ resource "cloudflare_zero_trust_gateway_policy" "security_tools_dns" {
   precedence  = 5
   action      = "allow"
   filters     = ["dns"]
-  traffic     = "any(dns.domains[*] in {\"kali.org\", \"metasploit.com\", \"hackerone.com\", \"splunk.com\", \"elastic.co\", \"sentinelone.com\"})"
+  traffic     = "dns.domains in {\"kali.org\" \"metasploit.com\" \"hackerone.com\" \"splunk.com\" \"elastic.co\" \"sentinelone.com\"}"
 }
 
 # Security tools allowlist - HTTP
@@ -84,21 +84,21 @@ resource "cloudflare_zero_trust_gateway_policy" "security_tools_http" {
   traffic     = "http.request.uri matches \".*security-tools.*\" or http.request.uri matches \".*security-monitor.*\""
 }
 
-# Default allow rule
+# Default allow rule with fixed syntax
 resource "cloudflare_zero_trust_gateway_policy" "default_allow" {
   account_id  = var.account_id
   name        = "Default Allow Rule"
   description = "Allow all other traffic"
-  precedence  = 100  # Low priority, evaluated last
+  precedence  = 100
   action      = "allow"
   filters     = ["dns", "http"]
-  traffic     = "any()"  # Default allow all other traffic
+  traffic     = "true"  # Always evaluates to true in v5
 }
 
-# Improved WARP enrollment application
+# WARP enrollment application
 resource "cloudflare_zero_trust_access_application" "warp_enrollment_app" {
   account_id             = var.account_id
-  session_duration       = "24h"  # Increased from 18h for better user experience
+  session_duration       = "24h"
   name                   = "${var.warp_name} - Device Enrollment"
   allowed_idps           = [var.azure_ad_provider_id]
   auto_redirect_to_identity = true

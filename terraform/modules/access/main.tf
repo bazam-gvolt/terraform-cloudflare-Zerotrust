@@ -2,7 +2,7 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"  # Updated to version 5
     }
   }
 }
@@ -13,11 +13,8 @@ resource "cloudflare_zero_trust_access_application" "app" {
   domain                  = var.app_domain
   type                    = "self_hosted"
   
-  # Add session configurations
   session_duration      = "24h"
   app_launcher_visible  = true
-  
-  # Remove these commented lines for clarity
 }
 
 # Policy for email-based access
@@ -33,15 +30,18 @@ resource "cloudflare_zero_trust_access_policy" "email_policy" {
   }
 }
 
-# Add team-specific policies
+# Fix the Red Team policy to use Azure directly instead of group path
 resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   account_id     = var.account_id
   application_id = cloudflare_zero_trust_access_application.app.id
   name           = "Red Team Access"
-  precedence     = 1  # Higher priority than email policy
+  precedence     = 1
   decision       = "allow"
 
   include {
-    group = ["${var.account_id}/${var.red_team_name}"]
+    azure {
+      id = var.red_team_group_ids
+      identity_provider_id = var.account_id
+    }
   }
 }
