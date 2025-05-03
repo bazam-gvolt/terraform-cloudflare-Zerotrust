@@ -30,7 +30,7 @@ resource "cloudflare_zero_trust_access_policy" "email_policy" {
   }
 }
 
-# Red team access policy
+# Red team access policy using group name
 resource "cloudflare_zero_trust_access_policy" "red_team_policy" {
   account_id     = var.account_id
   application_id = cloudflare_zero_trust_access_application.app.id
