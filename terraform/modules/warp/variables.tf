@@ -51,13 +51,27 @@ variable "blue_team_group_ids" {
 }
 
 variable "enable_logs" {
-  description = "Enable Gateway logs to S3"
+  description = "Enable Gateway logs"
   type        = bool
   default     = false
 }
 
-variable "log_bucket" {
-  description = "S3 bucket for Gateway logs"
+# Azure Storage variables
+variable "azure_storage_account" {
+  description = "Azure Storage Account name"
   type        = string
   default     = ""
+}
+
+variable "azure_storage_container" {
+  description = "Azure Storage Container name"
+  type        = string
+  default     = "gateway-logs"
+}
+
+variable "azure_sas_token" {
+  description = "Azure SAS token for logging"
+  type        = string
+  default     = ""
+  sensitive   = true
 }

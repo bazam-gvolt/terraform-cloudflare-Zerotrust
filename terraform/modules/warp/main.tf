@@ -175,13 +175,15 @@ resource "cloudflare_zero_trust_access_policy" "blue_team_warp_policy" {
   }
 }
 
-# Enable gateway logging for analysis - conditional based on variable
+# Enable gateway logging to Azure Storage (instead of S3)
 resource "cloudflare_logpush_job" "gateway_logs" {
   count      = var.enable_logs ? 1 : 0
   name       = "gateway-logs"
   account_id = var.account_id
   dataset    = "gateway_dns"
-  destination_conf = "s3://${var.log_bucket}/gateway-logs?region=auto"
+  
+  # Using Azure Blob Storage format
+  destination_conf = "azure://${var.azure_storage_account}.blob.core.windows.net/${var.azure_storage_container}?sas=${var.azure_sas_token}"
   
   logpull_options = "fields=ClientIP,ClientRequestHost,ClientRequestPath,ClientRequestQuery,EdgeResponseBytes"
   

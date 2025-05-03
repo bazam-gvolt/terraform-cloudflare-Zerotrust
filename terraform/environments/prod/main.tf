@@ -58,7 +58,9 @@ module "warp" {
   red_team_group_ids = var.red_team_group_ids
   blue_team_group_ids = var.blue_team_group_ids
   enable_logs = var.enable_logs
-  log_bucket = var.log_bucket
+  azure_storage_account = var.azure_storage_account
+  azure_storage_container = var.azure_storage_container
+  azure_sas_token = var.azure_sas_token
   depends_on = [cloudflare_zero_trust_gateway_settings.zero_trust, module.idp]
 }
 
@@ -70,7 +72,7 @@ module "gateway" {
   depends_on    = [cloudflare_zero_trust_gateway_settings.zero_trust]
 }
 
-# In the access module section, update the device_posture_rule_ids
+# Update the access module to pass rule group IDs
 module "access" {
   source = "../../modules/access"
   account_id     = var.account_id
@@ -79,6 +81,8 @@ module "access" {
   allowed_emails = ["user@gvolt.co.uk"]
   red_team_name  = var.red_team_name
   blue_team_name = var.blue_team_name
+  red_team_id    = module.idp.red_team_id
+  blue_team_id   = module.idp.blue_team_id
   red_team_group_ids = var.red_team_group_ids
   blue_team_group_ids = var.blue_team_group_ids
   device_posture_rule_ids = [
@@ -86,5 +90,5 @@ module "access" {
     module.device_posture.os_version_rule_id,
     module.device_posture.intune_compliance_rule_id
   ]
-  depends_on     = [cloudflare_zero_trust_gateway_settings.zero_trust, module.device_posture]
+  depends_on     = [cloudflare_zero_trust_gateway_settings.zero_trust, module.device_posture, module.idp]
 }

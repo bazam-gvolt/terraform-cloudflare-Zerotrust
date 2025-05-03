@@ -47,3 +47,13 @@ resource "cloudflare_zero_trust_access_group" "blue_team" {
     }
   }
 }
+
+# Additional Access Group - Device Requirements
+resource "cloudflare_zero_trust_access_group" "secure_devices" {
+  account_id = var.account_id
+  name       = "Secure Devices"
+  
+  require {
+    device_posture = ["disk_encryption", "os_version"]
+  }
+}

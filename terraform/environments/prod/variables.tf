@@ -62,6 +62,8 @@ variable "blue_team_group_ids" {
   default     = []
 }
 
+# Add at the end of the variables.tf file
+
 # Logging configuration
 variable "enable_logs" {
   description = "Enable logging for analysis"
@@ -69,8 +71,22 @@ variable "enable_logs" {
   default     = false
 }
 
-variable "log_bucket" {
-  description = "S3 bucket for storing logs"
+# Azure Storage variables
+variable "azure_storage_account" {
+  description = "Azure Storage Account name"
   type        = string
-  default     = "zero-trust-logs"
+  default     = ""
+}
+
+variable "azure_storage_container" {
+  description = "Azure Storage Container name"
+  type        = string
+  default     = "gateway-logs"
+}
+
+variable "azure_sas_token" {
+  description = "Azure SAS token for logging"
+  type        = string
+  default     = ""
+  sensitive   = true
 }

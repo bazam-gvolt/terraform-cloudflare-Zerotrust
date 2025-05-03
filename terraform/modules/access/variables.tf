@@ -31,6 +31,16 @@ variable "blue_team_name" {
   default     = "Blue Team"
 }
 
+variable "red_team_id" {
+  description = "ID of the Red Team rule group"
+  type        = string
+}
+
+variable "blue_team_id" {
+  description = "ID of the Blue Team rule group"
+  type        = string
+}
+
 variable "red_team_group_ids" {
   description = "List of Azure AD group IDs for red team members"
   type        = list(string)
