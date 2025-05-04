@@ -1,4 +1,3 @@
-I'll create a comprehensive README.md file for your Terraform Cloudflare Zero Trust implementation that explains the infrastructure, how to use it, and the security model you've created.
 
 ```markdown
 # Cloudflare Zero Trust Red Team/Blue Team Security Framework
@@ -57,11 +56,11 @@ intune_client_secret = "your-intune-client-secret"
 
 # Red team configuration
 red_team_name = "Red Team"
-red_team_group_ids = ["4bcdb329-9bdc-4954-a472-db14805b1bf0"]
+red_team_group_ids = [""]
 
 # Blue team configuration
 blue_team_name = "Blue Team"
-blue_team_group_ids = ["03eb955d-3359-401e-a127-5a0ebafcea86"]
+blue_team_group_ids = [""]
 ```
 
 ### 2. Initialize Terraform
