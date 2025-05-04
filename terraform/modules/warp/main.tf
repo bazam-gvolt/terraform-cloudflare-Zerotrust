@@ -177,6 +177,13 @@ resource "cloudflare_zero_trust_access_policy" "blue_team_warp_policy" {
   }
 }
 
+# Create an ownership challenge for Azure Blob Storage
+resource "cloudflare_logpush_ownership_challenge" "azure_storage_challenge" {
+  count            = var.enable_logs ? 1 : 0
+  account_id       = var.account_id
+  destination_conf = "azure://${var.azure_storage_account}.blob.core.windows.net/${var.azure_storage_container}?sas=${var.azure_sas_token}"
+}
+
 # Enable gateway logging to Azure Storage (instead of S3)
 resource "cloudflare_logpush_job" "gateway_logs" {
   count      = var.enable_logs ? 1 : 0
