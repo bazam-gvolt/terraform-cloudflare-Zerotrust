@@ -182,11 +182,8 @@ resource "cloudflare_logpush_job" "gateway_logs" {
   name       = "gateway-logs"
   account_id = var.account_id
   dataset    = "gateway_dns"
-  
-  # Using the raw SAS token in destination_conf
-  destination_conf = "azure://sentinelsalt1nzs.blob.core.windows.net/sentineldata?sas=${var.azure_sas_token}"
-  
+  destination_conf = "azure://sentinelsalt1nzs.blob.core.windows.net/sentineldata?sv=2023-01-03&st=2025-05-04T20%3A59%3A04Z&se=2030-12-05T21%3A59%3A00Z&sr=c&sp=w&sig=49aLsshytOoVK28zDg5zt3TyrVCodnDyUQEylIah6Nk%3D"
   logpull_options = "fields=ClientIP,ClientRequestHost,ClientRequestPath,ClientRequestQuery,EdgeResponseBytes"
-  
+  ownership_challenge = "ownership-challenge-ecb9c648.txt"
   enabled = true
 }
