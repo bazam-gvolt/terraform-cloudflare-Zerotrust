@@ -158,9 +158,6 @@ resource "cloudflare_zero_trust_tunnel_cloudflared" "blue_team" {
   account_id = var.account_id
   name       = "blue-team-tunnel"
   secret     = base64encode(random_password.blue_tunnel_secret.result)
-  
-  # Add tags for better organization
-  tags = ["blue-team", "production", "managed-by-terraform"]
 }
 
 resource "random_password" "blue_tunnel_secret" {
