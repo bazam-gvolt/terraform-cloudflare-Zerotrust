@@ -121,11 +121,11 @@ resource "cloudflare_zero_trust_access_policy" "blue_team_exclusive_policy" {
   }
   
   # Require device posture check for disk encryption
+  require {
+    device_posture = ["disk_encryption"]
+  }
+}
 
-
-
-
-}  }    device_posture = ["disk_encryption"]  require {
 # Red Team tunnel
 resource "cloudflare_zero_trust_tunnel_cloudflared" "red_team" {
   account_id = var.account_id
@@ -158,11 +158,15 @@ resource "cloudflare_zero_trust_tunnel_cloudflared" "blue_team" {
   account_id = var.account_id
   name       = "blue-team-tunnel"
   secret     = base64encode(random_password.blue_tunnel_secret.result)
+  
+  # Add tags for better organization
+  tags = ["blue-team", "production", "managed-by-terraform"]
 }
 
 resource "random_password" "blue_tunnel_secret" {
-  length  = 32
-  special = true
+  length      = 32
+  special     = true
+  min_special = 2
 }
 
 resource "cloudflare_zero_trust_tunnel_cloudflared_config" "blue_team" {
@@ -173,6 +177,11 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "blue_team" {
     ingress_rule {
       hostname = "blue-team.${var.app_domain}"
       service  = "http://localhost:8081"
+      # Add origin request settings
+      origin_request {
+        connect_timeout = "30s"
+        no_tls_verify  = false
+      }
     }
     ingress_rule {
       service = "http_status:404"
