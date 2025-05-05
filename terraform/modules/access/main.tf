@@ -21,7 +21,7 @@ resource "cloudflare_zero_trust_access_application" "app" {
 resource "cloudflare_zero_trust_access_application" "red_team_app" {
   account_id           = var.account_id
   name                 = "Red Team - ${var.app_name}"
-  domain               = "red-${var.app_domain}"
+  domain               = "red-app.${var.app_domain}"
   type                 = "self_hosted"
   session_duration     = "24h"
   app_launcher_visible = true
@@ -31,7 +31,7 @@ resource "cloudflare_zero_trust_access_application" "red_team_app" {
 resource "cloudflare_zero_trust_access_application" "blue_team_app" {
   account_id           = var.account_id
   name                 = "Blue Team - ${var.app_name}"
-  domain               = "blue-${var.app_domain}"
+  domain               = "blue-app.${var.app_domain}"
   type                 = "self_hosted"
   session_duration     = "24h"
   app_launcher_visible = true
