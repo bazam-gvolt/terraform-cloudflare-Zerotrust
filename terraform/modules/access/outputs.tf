@@ -27,3 +27,25 @@ output "blue_team_app_domain" {
   value = cloudflare_zero_trust_access_application.blue_team_app.domain
   description = "Domain for the Blue Team application"
 }
+
+output "red_team_tunnel_token" {
+  description = "Token for the Red Team tunnel"
+  value       = cloudflare_zero_trust_tunnel_cloudflared.red_team.tunnel_token
+  sensitive   = true
+}
+
+output "blue_team_tunnel_token" {
+  description = "Token for the Blue Team tunnel"
+  value       = cloudflare_zero_trust_tunnel_cloudflared.blue_team.tunnel_token
+  sensitive   = true
+}
+
+output "red_team_tunnel_id" {
+  description = "ID of the Red Team tunnel"
+  value       = cloudflare_zero_trust_tunnel_cloudflared.red_team.id
+}
+
+output "blue_team_tunnel_id" {
+  description = "ID of the Blue Team tunnel"
+  value       = cloudflare_zero_trust_tunnel_cloudflared.blue_team.id
+}

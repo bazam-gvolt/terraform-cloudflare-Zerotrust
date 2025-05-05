@@ -4,6 +4,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 4.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -21,7 +25,7 @@ resource "cloudflare_zero_trust_access_application" "app" {
 resource "cloudflare_zero_trust_access_application" "red_team_app" {
   account_id           = var.account_id
   name                 = "Red Team - ${var.app_name}"
-  domain               = "red-app.${var.app_domain}"
+  domain               = "red-team.${var.app_domain}"
   type                 = "self_hosted"
   session_duration     = "24h"
   app_launcher_visible = true
@@ -31,7 +35,7 @@ resource "cloudflare_zero_trust_access_application" "red_team_app" {
 resource "cloudflare_zero_trust_access_application" "blue_team_app" {
   account_id           = var.account_id
   name                 = "Blue Team - ${var.app_name}"
-  domain               = "blue-app.${var.app_domain}"
+  domain               = "blue-team.${var.app_domain}"
   type                 = "self_hosted"
   session_duration     = "24h"
   app_launcher_visible = true
@@ -117,7 +121,61 @@ resource "cloudflare_zero_trust_access_policy" "blue_team_exclusive_policy" {
   }
   
   # Require device posture check for disk encryption
-  require {
-    device_posture = ["disk_encryption"]
+
+
+
+
+}  }    device_posture = ["disk_encryption"]  require {
+# Red Team tunnel
+resource "cloudflare_zero_trust_tunnel_cloudflared" "red_team" {
+  account_id = var.account_id
+  name       = "red-team-tunnel"
+  secret     = base64encode(random_password.red_tunnel_secret.result)
+}
+
+resource "random_password" "red_tunnel_secret" {
+  length  = 32
+  special = true
+}
+
+resource "cloudflare_zero_trust_tunnel_cloudflared_config" "red_team" {
+  account_id = var.account_id
+  tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.red_team.id
+
+  config {
+    ingress_rule {
+      hostname = "red-team.${var.app_domain}"
+      service  = "http://localhost:8080"
+    }
+    ingress_rule {
+      service = "http_status:404"
+    }
+  }
+}
+
+# Blue Team tunnel
+resource "cloudflare_zero_trust_tunnel_cloudflared" "blue_team" {
+  account_id = var.account_id
+  name       = "blue-team-tunnel"
+  secret     = base64encode(random_password.blue_tunnel_secret.result)
+}
+
+resource "random_password" "blue_tunnel_secret" {
+  length  = 32
+  special = true
+}
+
+resource "cloudflare_zero_trust_tunnel_cloudflared_config" "blue_team" {
+  account_id = var.account_id
+  tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.blue_team.id
+
+  config {
+    ingress_rule {
+      hostname = "blue-team.${var.app_domain}"
+      service  = "http://localhost:8081"
+    }
+    ingress_rule {
+      service = "http_status:404"
+    }
   }
 }
